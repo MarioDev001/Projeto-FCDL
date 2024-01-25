@@ -25,6 +25,7 @@ function users() {
     
     $copiaFormat = stripslashes($copias);
     $copiaFini =json_decode($copiaFormat);
+    $url_do_dominio = home_url();
 
     $post = $copiaFini[0] === 'post' ? true : '';
     $pagina = $copiaFini[1] === 'pagina' ? true : '';
@@ -229,7 +230,7 @@ function users() {
                         </div>
                         <div class="div_input">
                             <label for="dominio">Url do Domínio atual: </label>
-                            <input placeholder="https://meuDominio.com" value="<?php echo esc_html($dominio); ?>" class="input_check" name="dominio" id="dominio" type="text" required>
+                            <input placeholder="https://meuDominio.com" value="<?php echo isset($dominio) ? esc_html($dominio) : esc_html($url_do_dominio); ?>" class="input_check" name="dominio" id="dominio" type="text" required>
                         </div>
                         <div>
                         <?php 
@@ -322,9 +323,9 @@ function users() {
                 if (!response.ok) {
                     if (response.status === 406) {
                         // Código de status 406 - Erro no email
-                        statusMessage.innerText = "Error no Email: por favor, verifique ou tente outro endereço";
+                        statusMessage.innerText = "Error no Email: Por favor, verifique ou tente outro endereço";
                     } else {
-                        statusMessage.innerText = "Erro desconhecido: " + response.statusText;
+                        statusMessage.innerText = "Error: Por favor Verifique os campos";
                     }
                 } else {
                     statusMessage.innerText = "Solicitação bem-sucedida: Aguarde o token de autorização.";
