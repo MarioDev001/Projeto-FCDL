@@ -45,11 +45,9 @@ function desinstalar_plugin() {
 
     // Você pode adicionar mais lógica de desinstalação aqui, se necessário
 }
-
 function check_for_plugin_update() {
     $current_version = '1.0.1'; // Versão atual do seu plugin
-    $json_url = 'https://raw.githubusercontent.com/MarioDev001/Projeto-FCDL/main/update-manifest.json
-    '; // URL do manifesto no GitHub
+    $json_url = 'https://raw.githubusercontent.com/MarioDev001/Projeto-FCDL/main/update-manifest.json'; // URL do manifesto no GitHub
 
     $response = wp_remote_get($json_url);
     if (is_wp_error($response)) {
@@ -60,12 +58,17 @@ function check_for_plugin_update() {
     $data = json_decode($body);
 
     if (version_compare($current_version, $data->version, '<')) {
-        add_action('admin_notices', 'show_update_notice');
+        // Passa os dados para a função show_update_notice
+        add_action('admin_notices', function () use ($data) {
+            show_update_notice($data);
+        });
     }
 }
 
-function show_update_notice() {
+function show_update_notice($data) {
     echo '<div class="notice notice-info is-dismissible"><p>Uma nova versão do Seu Plugin está disponível. <a href="' . $data->download_url . '">Atualize agora</a>.</p></div>';
 }
 
 add_action('admin_init', 'check_for_plugin_update');
+
+
