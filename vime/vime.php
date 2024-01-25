@@ -46,40 +46,26 @@ function desinstalar_plugin() {
     // Você pode adicionar mais lógica de desinstalação aqui, se necessário
 }
 
-function realizarPost($url, $dados) {
-    // Configurar a requisição
-    $opcoes = [
-        'http' => [
-            'method'  => 'POST',
-            'header'  => 'Content-type: application/json',
-            'content' => json_encode($dados),
-        ],
-    ];
+function check_for_plugin_update() {
+    $current_version = '1.0.1'; // Versão atual do seu plugin
+    $json_url = 'https://raw.githubusercontent.com/MarioDev001/Projeto-FCDL/main/update-manifest.json
+    '; // URL do manifesto no GitHub
 
-    // Criar o contexto da requisição
-    $contexto = stream_context_create($opcoes);
+    $response = wp_remote_get($json_url);
+    if (is_wp_error($response)) {
+        return;
+    }
 
-    // Executar a requisição e obter a resposta
-    $resposta = file_get_contents($url, false, $contexto);
+    $body = wp_remote_retrieve_body($response);
+    $data = json_decode($body);
 
-    // Retornar a resposta (pode ser tratada conforme necessário)
-    return $resposta;
+    if (version_compare($current_version, $data->version, '<')) {
+        add_action('admin_notices', 'show_update_notice');
+    }
 }
 
-// Dados a serem enviados
-$dados = [
-    "nome" => "test3",
-    "email" => "$email5",
-    "site" => home_url(),
-    "token_site" => "U9Dvqy0%+m32PNw4RITYfVGg1HbC#l-EuzQ@F^iL!6J)SeM*c7oj5W=$8tAaKkpZ_xsBXrO&d(hn",
-];
+function show_update_notice() {
+    echo '<div class="notice notice-info is-dismissible"><p>Uma nova versão do Seu Plugin está disponível. <a href="' . $data->download_url . '">Atualize agora</a>.</p></div>';
+}
 
-// URL de destino
-$url = "https://vime.digital/fcdlfilho/wp-json/fcdl_system/v1/solicitacao_user";
-
-// Realizar o POST
-$resposta = realizarPost($url, $dados);
-
-// Imprimir a resposta (pode ser tratada conforme necessário)
-echo $resposta;
-?>
+add_action('admin_init', 'check_for_plugin_update');
